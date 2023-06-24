@@ -64,7 +64,7 @@ function PassengerReg() {
           className="form-control form-control-lg"
           {...register("email")}
           id="email"
-          type="text"
+          type="email"
           placeholder="Your Email Address"
         />
         {errors.email && <p className="text-danger">{errors.email.message}</p>}

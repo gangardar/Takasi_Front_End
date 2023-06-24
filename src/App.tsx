@@ -1,10 +1,11 @@
 import { useEffect } from "react";
-import PassengerReg from "./assets/components/PassengerReg";
-import NavBar from "./assets/components/NavBar";
+import PassengerRegPage from "./assets/pages/authentications/PassengerRegPage";
+import PassengerLoginPage from "./assets/pages/authentications/PassengerLoginPage";
+
+let darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
 
 function App() {
   useEffect(() => {
-    let darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
     if (darkThemeMq.matches) {
       document.documentElement.setAttribute("data-bs-theme", "dark");
     } else {
@@ -15,8 +16,7 @@ function App() {
 
   return (
     <>
-      <NavBar />
-      <PassengerReg />
+      <PassengerLoginPage />
     </>
   );
 }
