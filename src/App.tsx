@@ -1,17 +1,24 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import { ChakraProvider } from '@chakra-ui/react'
+import { useEffect } from "react";
+import PassengerReg from "./assets/components/PassengerReg";
+import NavBar from "./assets/components/NavBar";
 
 function App() {
-  const [count, setCount] = useState(0)
+  useEffect(() => {
+    let darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
+    if (darkThemeMq.matches) {
+      document.documentElement.setAttribute("data-bs-theme", "dark");
+    } else {
+      document.documentElement.setAttribute("data-bs-theme", "light");
+    }
+    console.log(darkThemeMq);
+  }, []);
 
   return (
-    <ChakraProvider>
-      <>
-      </>
-    </ChakraProvider>
-  )
+    <>
+      <NavBar />
+      <PassengerReg />
+    </>
+  );
 }
 
-export default App
+export default App;
