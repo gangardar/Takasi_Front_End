@@ -1,6 +1,5 @@
 import { useEffect } from "react";
-import PassengerRegPage from "./assets/pages/authentications/PassengerRegPage";
-import PassengerLoginPage from "./assets/pages/authentications/PassengerLoginPage";
+import DriverReg from "./components/DriverReg";
 
 let darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
 
@@ -16,7 +15,7 @@ function App() {
 
   return (
     <>
-      <PassengerLoginPage />
+      <DriverReg />
     </>
   );
 }

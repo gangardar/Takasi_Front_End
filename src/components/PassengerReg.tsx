@@ -16,7 +16,7 @@ const schema = z.object({
 
 type PassengerRegFormData = z.infer<typeof schema>;
 
-function PassengerReg() {
+function PassengerReg({ onSubmit }: Props) {
   const {
     register,
     reset,
@@ -25,7 +25,14 @@ function PassengerReg() {
   } = useForm<PassengerRegFormData>({ resolver: zodResolver(schema) });
 
   return (
-    <form className="m-4">
+    <form
+      onSubmit={handleSubmit((data) => {
+        onSubmit(data);
+        reset();
+      })}
+      style={{ width: "70vw" }}
+      className="m-4"
+    >
       <div className="mb-3">
         <input
           className="form-control form-control-lg"
@@ -84,7 +91,11 @@ function PassengerReg() {
       </div>
 
       <div className="d-flex justify-content-end">
-        <button className="btn btn-primary btn-lg" disabled={!isValid}>
+        <button
+          type="submit"
+          className="btn btn-primary btn-lg"
+          disabled={!isValid}
+        >
           Submit
         </button>
       </div>
