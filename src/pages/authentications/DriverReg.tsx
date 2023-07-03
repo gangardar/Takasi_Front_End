@@ -1,9 +1,8 @@
 import { useState } from "react";
-import NavBar from "./NavBar";
-import DriverBikeDetails from "./driver_registration/DriverBikeDetails";
-import DriverDocDetail from "./driver_registration/DriverDocDetail";
-import DriverPersonal from "./driver_registration/DriverPersonal";
-import UseMultistepForm from "./driver_registration/UseMultistepForm";
+import NavBar from "../../components/NavBar";
+import DriverBikeDetails from "../../components/driver_registration/DriverBikeDetails";
+import DriverDocDetail from "../../components/driver_registration/DriverDocDetail";
+import DriverPersonal from "../../components/driver_registration/DriverPersonal";
 
 function DriverReg() {
   const [currentStep, setCurrentStep] = useState(0);

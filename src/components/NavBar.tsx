@@ -6,11 +6,11 @@ function NavBar() {
   const [path, setPath] = useState();
   return (
     <>
-      <nav className="d-flex bg-secondary justify-content-between">
-        <picture className="p-3">
+      <nav className="d-flex bg-secondary justify-content-between mb-3">
+        <picture className="my-auto mx-1">
           <img className="logo" src={logo} />
         </picture>
-        <div className="p-9 mt-2 mr-5">
+        <div className="my-auto mx-2">
           <svg
             onClick={() => {
               if (theme.getAttribute("data-bs-theme") === "dark") {

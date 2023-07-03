@@ -1,7 +1,3 @@
-html {
-  font-size: 62.5%;
-}
-
 form {
   font-size: 1.5rem;
 }
@@ -12,11 +8,11 @@ input {
 }
 
 .logo {
-  height: 3rem;
-  padding-left: 2rem;
+  height: 2.5rem;
+  padding-left: 1rem;
 }
 
 input::placeholder {
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: bold;
 }
