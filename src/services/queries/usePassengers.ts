@@ -1,14 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { PassengerFormData } from "../../components/PassengerReg";
+import APIClient from "../api-client";
+
+const apiClient = new APIClient<PassengerFormData>("/passenger");
 
 const usePassengers = () => {
-  const fetchPassenger = () =>
-    axios
-      .get<PassengerFormData[]>("http://127.0.0.1:8000/api/passenger/", {
-        params: {},
-      })
-      .then((res) => res.data);
+  const fetchPassenger = () => apiClient.getAll();
 
   return useQuery<PassengerFormData[], Error>({
     queryKey: ["Passengers"],

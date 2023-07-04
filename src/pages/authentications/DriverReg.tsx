@@ -1,5 +1,4 @@
 import { useState } from "react";
-import NavBar from "../../components/NavBar";
 import DriverBikeDetails from "../../components/driver_registration/DriverBikeDetails";
 import DriverDocDetail from "../../components/driver_registration/DriverDocDetail";
 import DriverPersonal from "../../components/driver_registration/DriverPersonal";
@@ -18,8 +17,6 @@ function DriverReg() {
 
   return (
     <>
-      <NavBar />
-
       {currentStep === 0 && (
         <DriverPersonal
           onSubmit={(data) => {
