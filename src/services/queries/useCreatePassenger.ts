@@ -1,6 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
 import { PassengerFormData } from "../../components/PassengerReg";
-import axios from "axios";
 import APIClient from "../api-client";
 
 const apiClient = new APIClient<PassengerFormData>("passenger");

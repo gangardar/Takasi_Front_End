@@ -1,6 +1,7 @@
 import { useEffect } from "react";
-import PassengerRegPage from "./pages/authentications/PassengerRegPage";
 import DriverReg from "./pages/authentications/DriverReg";
+import NavBar from "./components/NavBar";
+import ListDriver from "./components/admin-panel/ListDriver";
 
 let darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
 
@@ -16,7 +17,8 @@ function App() {
 
   return (
     <>
-      <DriverReg />
+      <NavBar />
+      <ListDriver />
     </>
   );
 }

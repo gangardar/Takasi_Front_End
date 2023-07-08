@@ -1,11 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { AnyZodObject, ZodAny, z } from "zod";
-import UseMultistepForm from "./UseMultistepForm";
-
-interface Props {
-  onSubmit: (data: ExpenseFormData) => void;
-}
+import { z } from "zod";
+import useCreateDriver from "../../services/queries/useCreateDriver";
 
 const MAX_FILE_SIZE = 500000;
 const ACCEPTED_IMAGE_TYPES = [
@@ -16,15 +12,16 @@ const ACCEPTED_IMAGE_TYPES = [
 ];
 
 const schema = z.object({
-  driver_name: z.string().min(3, { message: "Enter a valid name." }).max(50),
+  id: z.number().optional(),
+  name: z.string().min(3, { message: "Enter a valid name." }).max(50),
 
-  driver_lincence: z.string().min(9, { message: "Enter a valid number." }),
+  lincenceNo: z.string().min(9, { message: "Enter a valid number." }),
 
-  driver_phone: z.string().min(9, { message: "Enter a valid number" }).max(12),
+  phone: z.string().min(9, { message: "Enter a valid number" }).max(12),
 
-  driver_email: z.string().email(),
+  email: z.string().email(),
 
-  driver_profile: z
+  photo: z
     .any()
     .refine((files) => files?.length == 1, "Image is required.")
     .refine(
@@ -36,7 +33,9 @@ const schema = z.object({
       ".jpg, .jpeg, .png and .webp files are accepted."
     ),
 
-  driver_lincence_image: z
+  status: z.string().optional(),
+
+  drivingLincence: z
     .any()
     .refine((files) => files?.length == 1, "Image is required.")
     .refine(
@@ -48,20 +47,21 @@ const schema = z.object({
       ".jpg, .jpeg, .png and .webp files are accepted."
     ),
 
-  driver_password: z
+  password: z
     .string()
     .min(8, { message: "Password is too short" })
     .max(30, { message: "Your password exceeded our threshold" }),
 });
 
-type ExpenseFormData = z.infer<typeof schema>;
+export type DriverFormData = z.infer<typeof schema>;
 
-const DriverPersonal = ({ onSubmit }: Props) => {
+const DriverPersonal = () => {
+  const createDriver = useCreateDriver();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ExpenseFormData>({
+  } = useForm<DriverFormData>({
     resolver: zodResolver(schema),
   });
   return (
@@ -69,85 +69,91 @@ const DriverPersonal = ({ onSubmit }: Props) => {
       <form
         className="form-group form-group-lg"
         onSubmit={handleSubmit((data) => {
-          onSubmit(data);
+          createDriver.mutate({
+            name: data.name,
+            lincenceNo: data.lincenceNo,
+            phone: data.phone,
+            email: data.email,
+            password: data.password,
+            drivingLincence: data.drivingLincence,
+            photo: data.photo,
+          });
         })}
-        style={{ width: "70vw" }}
+        style={{ width: "80vw" }}
       >
         <div className="mb-3">
           <input
-            {...register("driver_name")}
+            {...register("name")}
             type="text"
-            id="driver_name"
+            id="name"
             className="form-control input-lg"
             placeholder="Enter Your Name"
           />
-          {errors.driver_name && (
-            <p className="text-danger">{errors.driver_name.message}</p>
-          )}
+          {errors.name && <p className="text-danger">{errors.name.message}</p>}
         </div>
         <div className="mb-3">
           <input
-            {...register("driver_lincence")}
+            {...register("lincenceNo")}
             type="text"
-            id="driver_lincence"
+            id="lincenceNo"
             className="form-control"
             placeholder="Enter Your Driving Lincence Number"
           />
-          {errors.driver_lincence && (
-            <p className="text-danger">{errors.driver_lincence.message}</p>
+          {errors.lincenceNo && (
+            <p className="text-danger">{errors.lincenceNo.message}</p>
           )}
         </div>
         <div className="mb-3">
           <input
-            {...register("driver_phone")}
+            {...register("phone")}
             type="text"
-            id="driver_phone"
+            id="phone"
             className="form-control"
             placeholder="Enter Phone Number"
           />
-          {errors.driver_phone && (
-            <p className="text-danger">{errors.driver_phone.message}</p>
+          {errors.phone && (
+            <p className="text-danger">{errors.phone.message}</p>
           )}
         </div>
         <div className="mb-3">
           <input
-            {...register("driver_email")}
+            {...register("email")}
             type="email"
-            id="driver_email"
+            id="email"
             className="form-control"
             placeholder="Enter Your Email Address"
           />
-          {errors.driver_email && (
-            <p className="text-danger">{errors.driver_email.message}</p>
+          {errors.email && (
+            <p className="text-danger">{errors.email.message}</p>
           )}
         </div>
 
         <div className="mb-3">
-          <label htmlFor="driver_profile" className="form-label">
+          <label htmlFor="photo" className="form-label">
             Provide Your Photo
           </label>
           <input
-            {...register("driver_profile")}
+            {...register("photo")}
             type="file"
-            id="driver_profile"
+            id="photo"
             className="form-control-file"
             placeholder="Your Profile"
             capture="user"
           />
 
-          {/* {errors.driver_profile && (
-            <p className="text-danger">{errors.driver_profile.message}</p>
+          {/* {errors.photo && (
+            <p className="text-danger">{errors.photo.message}</p>
           )} */}
         </div>
 
         <div className="mb-3">
-          <label htmlFor="driver_lincence_image" className="form-label">
+          <label htmlFor="drivingLincence" className="form-label">
             Provide Your Lincence Image
           </label>
           <input
-            {...register("driver_lincence_image")}
+            {...register("drivingLincence")}
             type="file"
-            id="driver_lincence_image"
+            id="drivingLincence"
             className="form-control-file"
             placeholder="Provide Your Driving Lincence Number"
           />
@@ -160,19 +166,21 @@ const DriverPersonal = ({ onSubmit }: Props) => {
 
         <div className="mb-3">
           <input
-            {...register("driver_password")}
+            {...register("password")}
             type="password"
-            id="driver_password"
+            id="password"
             className="form-control"
             placeholder="Enter Strong Password"
           />
-          {errors.driver_password && (
-            <p className="text-danger">{errors.driver_password.message}</p>
+          {errors.password && (
+            <p className="text-danger">{errors.password.message}</p>
           )}
         </div>
 
-        <div className="mb-3">
-          <button type="submit">Next</button>
+        <div className="d-flex justify-content-end">
+          <button className="btn btn-primary" type="submit">
+            Next
+          </button>
         </div>
       </form>
     </div>

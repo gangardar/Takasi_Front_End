@@ -1,45 +1,26 @@
 import { useState } from "react";
-import DriverBikeDetails from "../../components/driver_registration/DriverBikeDetails";
-import DriverDocDetail from "../../components/driver_registration/DriverDocDetail";
-import DriverPersonal from "../../components/driver_registration/DriverPersonal";
+import DriverBikeDetails, {
+  BikeFormData,
+} from "../../components/driver_registration/DriverBikeDetails";
+import DriverPersonal, {
+  DriverFormData,
+} from "../../components/driver_registration/DriverPersonal";
+import useCreateDriver from "../../services/queries/useCreateDriver";
+import NavBar from "../../components/NavBar";
 
 function DriverReg() {
   const [currentStep, setCurrentStep] = useState(0);
+  const [driverInfo, setDriverInfo] = useState<DriverFormData>();
+  const [bikeInfo, setBikeInfo] = useState<BikeFormData>();
 
-  // const { steps, currentStepIndex, step, next } = UseMultistepForm([
-  //   <DriverPersonal
-  //     onClick={1}
-  //     onSubmit={(data) => console.log(data)}
-  //   />,
-  //   <DriverBikeDetails onSubmit={(data) => console.log(data)} />,
-  //   <DriverDocDetail onSubmit={(data) => console.log(data)} />,
-  // ]);
+  if (driverInfo && bikeInfo) {
+    const createDriver = useCreateDriver();
+  }
 
   return (
     <>
-      {currentStep === 0 && (
-        <DriverPersonal
-          onSubmit={(data) => {
-            setCurrentStep(1);
-            console.log(data);
-          }}
-        />
-      )}
-      {currentStep === 1 && (
-        <DriverDocDetail
-          onSubmit={(data) => {
-            setCurrentStep(2);
-            console.log(data);
-          }}
-        />
-      )}
-      {currentStep === 2 && (
-        <DriverBikeDetails
-          onSubmit={(data) => {
-            console.log(data);
-          }}
-        />
-      )}
+      <NavBar />
+      <DriverPersonal />
     </>
   );
 }
