@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://127.0.0.1:8000/api/",
+  baseURL: "http://localhost:8000/api",
+  withCredentials: true,
 });
 
 class APIClient<T> {
@@ -19,9 +20,9 @@ class APIClient<T> {
     return axiosInstance.post<T>(this.endpoint, data).then((res) => res.data);
   };
 
-  delete = (id: number) => {
+  suspend = (id: number) => {
     return axiosInstance
-      .delete(`${this.endpoint}/${id}`)
+      .post(`${this.endpoint}/?id=${id}`)
       .then((res) => res.data);
   };
 }

@@ -1,7 +1,13 @@
 import usePassengers from "../../services/queries/usePassengers";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import PassengerAdminModal from "../PassengerAdminModal";
+import setCSRFCookie from "../../services/csrf-Token";
 
 const ListPassenger = () => {
+  useEffect(() => {
+    setCSRFCookie();
+  }, []);
+  const [selectedPassenger, setSelectedPassenger] = useState<any>();
   const [userId, setUserId] = useState<number>();
   const { data, error, isLoading } = usePassengers();
 
@@ -69,13 +75,21 @@ const ListPassenger = () => {
                     <i className="bi bi-map"></i>
                   </td>
                   <th scope="row">
-                    <button className="btn btn-danger">Delete</button>
+                    <button
+                      onClick={() => {
+                        setSelectedPassenger(passenger);
+                      }}
+                      className="btn btn-danger"
+                    >
+                      Delete
+                    </button>
                   </th>
                   <th scope="row">Update</th>
                 </tr>
               ))}
         </tbody>
       </table>
+      <div>{<PassengerAdminModal passenger={selectedPassenger} />}</div>
     </div>
   );
 };

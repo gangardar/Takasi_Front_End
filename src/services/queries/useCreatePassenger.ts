@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { PassengerFormData } from "../../components/PassengerReg";
 import APIClient from "../api-client";
 
-const apiClient = new APIClient<PassengerFormData>("passenger");
+const apiClient = new APIClient<PassengerFormData>("passenger/register");
 
 const useCreatePassenger = () => {
   return useMutation<PassengerFormData, Error, PassengerFormData>({

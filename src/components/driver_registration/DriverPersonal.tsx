@@ -2,6 +2,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import useCreateDriver from "../../services/queries/useCreateDriver";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import useGeoLocation from "../../services/hook/useGeoLocation";
+import ErrorModal from "../ErrorModal";
 
 const MAX_FILE_SIZE = 500000;
 const ACCEPTED_IMAGE_TYPES = [
@@ -29,7 +33,7 @@ const schema = z.object({
       `Max file size is 5MB.`
     )
     .refine(
-      (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
+      (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0].type),
       ".jpg, .jpeg, .png and .webp files are accepted."
     ),
 
@@ -43,9 +47,12 @@ const schema = z.object({
       `Max file size is 5MB.`
     )
     .refine(
-      (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
+      (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0].type),
       ".jpg, .jpeg, .png and .webp files are accepted."
     ),
+
+  current_latitude: z.string().optional(),
+  current_longitude: z.string().optional(),
 
   password: z
     .string()
@@ -56,6 +63,7 @@ const schema = z.object({
 export type DriverFormData = z.infer<typeof schema>;
 
 const DriverPersonal = () => {
+  const location = useGeoLocation();
   const createDriver = useCreateDriver();
   const {
     register,
@@ -64,24 +72,59 @@ const DriverPersonal = () => {
   } = useForm<DriverFormData>({
     resolver: zodResolver(schema),
   });
+
+  // const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = event.target.files?.[0];
+  //   console.log(file, event.target.files);
+  //   setSelectedPhoto(file);
+  // };
+
   return (
     <div className="d-flex justify-content-center">
       <form
+        encType="multipart/form-data"
         className="form-group form-group-lg"
         onSubmit={handleSubmit((data) => {
-          createDriver.mutate({
-            name: data.name,
-            lincenceNo: data.lincenceNo,
-            phone: data.phone,
-            email: data.email,
-            password: data.password,
-            drivingLincence: data.drivingLincence,
-            photo: data.photo,
-          });
+          const formData = new FormData();
+          formData.append("name", data.name);
+          formData.append("photo", data.photo[0]);
+          formData.append("email", data.email);
+          formData.append("lincenceNo", data.lincenceNo);
+          formData.append("phone", data.phone);
+          formData.append("status", "active");
+          formData.append("password", data.password);
+          formData.append("current_latitude", location.lat);
+          formData.append("current_longitude", location.long);
+          formData.append("drivingLincence", data.drivingLincence[0]);
+          // try {
+          //   const response = await axios.post(
+          //     "http://127.0.0.1:8000/api/driver/register",
+          //     formData
+          //   );
+          //   console.log(response.data);
+          // } catch (error) {
+          //   console.error(error);
+          // }
+
+          createDriver.mutate(formData);
+
+          // createDriver.mutate({
+          //   name: data.name,
+          //   lincenceNo: data.lincenceNo,
+          //   phone: data.phone,
+          //   email: data.email,
+          //   status: "active",
+          //   password: data.password,
+          //   drivingLincence: data.drivingLincence[0],
+          //   current_latitude: location.lat,
+          //   current_longitude: location.long,
+          //   photo: data.photo[0],
+          // });
         })}
         style={{ width: "80vw" }}
       >
         <div className="mb-3">
+          {createDriver.error && <ErrorModal {...createDriver.error} />}
           <input
             {...register("name")}
             type="text"
@@ -137,13 +180,14 @@ const DriverPersonal = () => {
             type="file"
             id="photo"
             className="form-control-file"
+            // onChange={(e) => handlePhotoChange(e)}
             placeholder="Your Profile"
             capture="user"
           />
 
-          {/* {errors.photo && (
-            <p className="text-danger">{errors.photo.message}</p>
-          )} */}
+          {errors.photo && (
+            <p className="text-danger">{errors.photo.message?.toString()}</p>
+          )}
         </div>
 
         <div className="mb-3">
@@ -157,11 +201,11 @@ const DriverPersonal = () => {
             className="form-control-file"
             placeholder="Provide Your Driving Lincence Number"
           />
-          {/* {errors.driver_lincence_image && (
+          {errors.drivingLincence && (
             <p className="text-danger">
-              {errors.driver_lincence_image.message}
+              {errors.drivingLincence.message?.toString()}
             </p>
-          )} */}
+          )}
         </div>
 
         <div className="mb-3">
@@ -177,9 +221,16 @@ const DriverPersonal = () => {
           )}
         </div>
 
+        {(errors.current_latitude || errors.current_longitude) && (
+          <div className="mb-3">
+            <p className="text-danger">{errors.current_latitude?.message};</p>
+            <p className="text-danger">{errors.current_longitude?.message};</p>
+          </div>
+        )}
+
         <div className="d-flex justify-content-end">
           <button className="btn btn-primary" type="submit">
-            Next
+            Submit
           </button>
         </div>
       </form>

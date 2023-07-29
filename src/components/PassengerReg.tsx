@@ -2,7 +2,16 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import useCreatePassenger from "../services/queries/useCreatePassenger";
+import setCSRFCookie from "../services/csrf-Token";
+import { useEffect } from "react";
 
+const MAX_FILE_SIZE = 500000;
+const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+];
 const schema = z.object({
   id: z.number().optional(),
   name: z
@@ -14,6 +23,7 @@ const schema = z.object({
       "The username must contain only letters, numbers and underscore (_)"
     ),
   phone: z.string(),
+  photo: z.string().optional(),
   age: z.number(),
   status: z.string().optional(),
   email: z.string().email({
@@ -28,7 +38,9 @@ export type PassengerFormData = z.infer<typeof schema>;
 
 function PassengerReg() {
   const createPassenger = useCreatePassenger();
-
+  useEffect(() => {
+    setCSRFCookie();
+  }, []);
   const {
     register,
     reset,
@@ -116,11 +128,7 @@ function PassengerReg() {
           )}
         </div>
         <div className="d-flex justify-content-end">
-          <button
-            type="submit"
-            className="btn btn-primary btn"
-            disabled={!isValid}
-          >
+          <button type="submit" className="btn btn-primary btn">
             Submit
           </button>
         </div>

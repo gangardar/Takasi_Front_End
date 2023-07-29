@@ -1,14 +1,15 @@
-import { useState } from "react";
+import { Link } from "react-router-dom";
 import logo from "../images/periscope.webp";
 
 function NavBar() {
   let theme = document.documentElement;
-  const [path, setPath] = useState();
   return (
     <>
       <nav className="d-flex bg-secondary justify-content-between mb-3">
         <picture className="my-auto mx-1">
-          <img className="logo" src={logo} />
+          <Link to={"/"}>
+            <img className="logo" src={logo} />
+          </Link>
         </picture>
         <div className="my-auto mx-2">
           <svg

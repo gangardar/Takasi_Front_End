@@ -1,11 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import useLoginPassenger from "../services/queries/useLoginPassenger";
 import setCSRFCookie from "../services/csrf-Token";
 import { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ErrorModal from "./ErrorModal";
+import useLoginDriver from "../services/queries/useLoginDriver";
 
 const schema = z.object({
   email: z.string().email({
@@ -14,40 +14,35 @@ const schema = z.object({
   password: z.string().min(8),
 });
 
-export type PassengerLogin = z.infer<typeof schema>;
+export type DriverLogin = z.infer<typeof schema>;
 
-const PassengerLogin = () => {
-  const navigate = useNavigate();
-
+const DriverLogin = () => {
   useEffect(() => {
     setCSRFCookie();
   }, []);
-  const loginPassenger = useLoginPassenger();
+  const loginDriver = useLoginDriver();
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm<PassengerLogin>({ resolver: zodResolver(schema) });
-
-  useEffect(() => {
-    if (loginPassenger.isSuccess) navigate("/passenger-dashboard");
-  }, [loginPassenger.isSuccess]);
-
-  const onSubmit = (data: PassengerLogin) => {
-    loginPassenger.mutate({
-      email: data.email,
-      password: data.password,
-    });
-  };
+  } = useForm<DriverLogin>({ resolver: zodResolver(schema) });
 
   return (
     <div
       className="d-flex align-items-center justify-content-center"
       style={{ height: "100vh" }}
     >
-      <form onSubmit={handleSubmit(onSubmit)} style={{ width: "70vw" }}>
+      <form
+        onSubmit={handleSubmit((data) => {
+          loginDriver.mutate({
+            email: data.email,
+            password: data.password,
+          });
+        })}
+        style={{ width: "70vw" }}
+      >
         <div className="form-group mb-3">
-          {loginPassenger.error && <ErrorModal {...loginPassenger.error} />}
+          {loginDriver.error && <ErrorModal {...loginDriver.error} />}
           <label className="form-lable">User Email</label>
           <input
             {...register("email")}
@@ -79,11 +74,11 @@ const PassengerLogin = () => {
           >
             Submit
           </button>
+          <Link to={"/driver-register"}>Register New Driver</Link>
         </div>
-        <Link to={"/passenger-register"}>Create New Account</Link>
       </form>
     </div>
   );
 };
 
-export default PassengerLogin;
+export default DriverLogin;
