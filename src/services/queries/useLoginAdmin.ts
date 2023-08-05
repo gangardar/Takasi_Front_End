@@ -1,12 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
-import { PassengerLogin } from "../../components/PassengerLogin";
 import APIClient from "../api-client";
+import { AdminLogin } from "../../components/admin-panel/AdminLogin";
 
-const apiClient = new APIClient<PassengerLogin>("passenger/login");
+const apiClient = new APIClient<AdminLogin>("admin/login");
 
-const useLoginPassenger = () => {
-  return useMutation<any, Error, PassengerLogin>({
-    mutationFn: (passenger: PassengerLogin) => apiClient.post(passenger),
+const useLoginAdmin = () => {
+  return useMutation<any, Error, AdminLogin>({
+    mutationFn: (passenger: AdminLogin) => apiClient.post(passenger),
 
     onSuccess: (data, newdata) => {
       // Store the token in local storage
@@ -21,4 +21,4 @@ const useLoginPassenger = () => {
   });
 };
 
-export default useLoginPassenger;
+export default useLoginAdmin;

@@ -4,7 +4,7 @@ import driver from "../images/driver.webp";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
-const HomePage: React.FC = () => {
+const HomePage = () => {
   const backgroundImageStyle = {
     backgroundSize: "cover",
     backgroundRepeat: "no-repeat",
@@ -64,9 +64,9 @@ const HomePage: React.FC = () => {
           role="dialog"
           style={{ display: "block" }}
         >
-          <div className="modal-dialog" role="document">
+          <div className="modal-dialog " role="document">
             <div className="modal-content">
-              <div className="modal-header">
+              <div className="modal-header bg-info">
                 <h5 className="modal-title">Welcome to Takasi</h5>
                 <button
                   type="button"
@@ -75,17 +75,14 @@ const HomePage: React.FC = () => {
                   aria-label="Close"
                 ></button>
               </div>
-              <div className="modal-body">
+              <div className="modal-body bg-light">
                 <p>
-                  We're delighted to have you on board with us! At Takasi, we
-                  strive to provide you with a seamless and convenient taxi
-                  hailing experience like no other. Whether you're heading to
-                  work, meeting friends, or exploring new places, our dedicated
-                  team is here to ensure you reach your destination safely and
-                  comfortably.
+                  We're delighted to have you on board with us! At{" "}
+                  <b> Takasi</b>, we strive to provide you with a seamless and
+                  convenient taxi hailing experience like no other.
                 </p>
               </div>
-              <div className="modal-footer">
+              <div className="modal-footer bg-body ">
                 <button
                   type="button"
                   className="btn btn-primary"

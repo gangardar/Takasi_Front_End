@@ -5,7 +5,6 @@ input {
 
 .logo {
   height: 2.5rem;
-  padding-left: 1rem;
 }
 
 input::placeholder {

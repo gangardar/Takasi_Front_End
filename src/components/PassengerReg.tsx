@@ -4,6 +4,8 @@ import { z } from "zod";
 import useCreatePassenger from "../services/queries/useCreatePassenger";
 import setCSRFCookie from "../services/csrf-Token";
 import { useEffect } from "react";
+import useGeoLocation from "../services/hook/useGeoLocation";
+import { Link } from "react-router-dom";
 
 const MAX_FILE_SIZE = 500000;
 const ACCEPTED_IMAGE_TYPES = [
@@ -22,7 +24,9 @@ const schema = z.object({
       /^[a-zA-Z ]+$/,
       "The username must contain only letters, numbers and underscore (_)"
     ),
-  phone: z.string(),
+  phone: z
+    .string()
+    .min(4, { message: "Please Enter a Phone Number Valid one" }),
   photo: z.string().optional(),
   age: z.number(),
   status: z.string().optional(),
@@ -30,17 +34,16 @@ const schema = z.object({
     message: "Invalid email. Please enter a valid email address",
   }),
   password: z.string(),
-  current_latitude: z.number().optional(),
-  current_longitude: z.number().optional(),
+  current_latitude: z.string().optional(),
+  current_longitude: z.string().optional(),
 });
 
 export type PassengerFormData = z.infer<typeof schema>;
 
 function PassengerReg() {
+  const location = useGeoLocation();
   const createPassenger = useCreatePassenger();
-  useEffect(() => {
-    setCSRFCookie();
-  }, []);
+
   const {
     register,
     reset,
@@ -50,6 +53,7 @@ function PassengerReg() {
 
   return (
     <>
+      <p className="h3 text-center text-info">Passenger Registeration</p>
       {createPassenger.error && (
         <div className="alert alert-danger">
           {createPassenger.error.message}
@@ -64,8 +68,8 @@ function PassengerReg() {
             status: "active",
             email: data.email,
             password: data.password,
-            current_latitude: 0,
-            current_longitude: 0,
+            current_latitude: location.lat,
+            current_longitude: location.long,
           });
           reset();
         })}
@@ -131,6 +135,11 @@ function PassengerReg() {
           <button type="submit" className="btn btn-primary btn">
             Submit
           </button>
+        </div>
+        <div>
+          <Link to={"/passenger-login"} className="nav-link text-primary">
+            Already have a account. <b>Login</b>
+          </Link>
         </div>
       </form>
     </>

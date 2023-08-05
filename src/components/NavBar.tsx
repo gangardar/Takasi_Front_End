@@ -6,7 +6,7 @@ function NavBar() {
   return (
     <>
       <nav className="d-flex bg-secondary justify-content-between mb-3">
-        <picture className="my-auto mx-1">
+        <picture className="my-auto ms-3">
           <Link to={"/"}>
             <img className="logo" src={logo} />
           </Link>

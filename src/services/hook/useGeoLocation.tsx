@@ -9,6 +9,7 @@ const useGeoLocation = () => {
   });
 
   const onSuccess = (location: any) => {
+    console.log("geolocation", location);
     setLocation({
       loaded: true,
       coordinates: {

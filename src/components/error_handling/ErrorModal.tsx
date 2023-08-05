@@ -5,11 +5,11 @@ const ErrorModal = (error: Error) => {
   const [errorState, setErrorState] = useState(!!error);
   const close = () => setErrorState(false);
   return (
-    <Modal show={errorState} onHide={close} className="mt-5">
+    <Modal show={errorState} onHide={close} className="mt-3">
       <Modal.Header closeButton>
-        <Modal.Title>Error</Modal.Title>
+        <Modal.Title>Message</Modal.Title>
       </Modal.Header>
-      <Modal.Body>{error.message}</Modal.Body>
+      <Modal.Body className="text-center text-info">{error.message}</Modal.Body>
     </Modal>
   );
 };

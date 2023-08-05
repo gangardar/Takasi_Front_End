@@ -5,6 +5,23 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const apiToken = localStorage.getItem("apiToken");
+
+    if (apiToken) {
+      // Add headers to the request
+      const token = `Bearer ${apiToken}`;
+      config.headers["Authorization"] = token;
+    }
+    // console.log("request config", config);
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 class APIClient<T> {
   endpoint: string;
 

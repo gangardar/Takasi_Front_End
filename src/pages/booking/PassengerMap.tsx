@@ -1,18 +1,46 @@
-import React from "react";
-import SideBar from "../../components/SideBar";
-import MapsComponent from "../../components/Maps";
-import BookingInitial from "../../components/BookingInitial";
+import React, { useContext, useEffect, useState } from "react";
+import SideBar from "../../components/PassengerSideBar";
+import { useNavigate } from "react-router-dom";
+import AuthContext from "../../services/contexts/authContext";
+import { LoadScriptProps, useLoadScript } from "@react-google-maps/api";
+import MapSpinner from "../../components/map/MapSpinner";
+import Maps from "../../components/map/Maps";
+import useGeoLocation from "../../services/hook/useGeoLocation";
+
+const libraries: LoadScriptProps["libraries"] = ["places"];
 
 const PassengerMap = () => {
+  //To Location Setting
+  const navigate = useNavigate();
+  const { authResponse } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (!authResponse.isAuthenticated || authResponse.role !== "passenger") {
+      return navigate("/");
+      console.log(authResponse);
+    }
+  }, [authResponse]);
+
+  if (!authResponse.isAuthenticated || authResponse.role !== "passenger") {
+    return navigate("/");
+    console.log(authResponse);
+  }
+
   const center = {
-    lat: 22.922459,
-    lng: 96.5119287,
+    lat: parseFloat(authResponse.user.current_latitude),
+    lng: parseFloat(authResponse.user.current_longitude),
   };
+
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: "AIzaSyDj40AQyK_j5oCfvLvBJOqZtUuTlLhVCKk",
+    libraries,
+  });
+
+  if (!isLoaded) return <MapSpinner />;
   return (
     <>
-      <MapsComponent center={center} zoom={15} />
+      <Maps center={center} />
       <SideBar />
-      <BookingInitial />
     </>
   );
 };

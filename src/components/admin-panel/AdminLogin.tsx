@@ -1,12 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useContext, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Link, Navigate, useNavigate } from "react-router-dom";
 import { z } from "zod";
-import useLoginPassenger from "../services/queries/useLoginPassenger";
-import ErrorModal from "./error_handling/ErrorModal";
-import AuthContext from "../services/contexts/authContext";
-import useRetrieveUser from "../services/queries/useRetrieveUser";
+import useLoginAdmin from "../../services/queries/useLoginAdmin";
+import ErrorModal from "../error_handling/ErrorModal";
+import useRetrieveUser from "../../services/queries/useRetrieveUser";
+import { useContext, useEffect, useState } from "react";
+import AuthContext from "../../services/contexts/authContext";
+import { useNavigate } from "react-router-dom";
 
 const schema = z.object({
   email: z.string().email({
@@ -15,28 +15,31 @@ const schema = z.object({
   password: z.string().min(8),
 });
 
-export type PassengerLogin = z.infer<typeof schema>;
+export type AdminLogin = z.infer<typeof schema>;
 
-const PassengerLogin = () => {
-  const { authResponse, dispatch } = useContext(AuthContext);
+const AdminLogin = () => {
   const navigate = useNavigate();
+  const { authResponse, dispatch } = useContext(AuthContext);
+  const [hasBeenAuthenticated, setHasBeenAuthenticated] = useState(
+    authResponse.isAuthenticated
+  );
 
-  const loginPassenger = useLoginPassenger();
+  const loginAdmin = useLoginAdmin();
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm<PassengerLogin>({ resolver: zodResolver(schema) });
+  } = useForm<AdminLogin>({ resolver: zodResolver(schema) });
 
   const retrieved = useRetrieveUser(); // Create an instance of useRetrieveUser hook
 
   useEffect(() => {
     // This is the correct place to handle the response from the login API
-    if (loginPassenger.isSuccess) {
+    if (loginAdmin.isSuccess) {
       // Call the useRetrieveUser hook with an empty string (or appropriate API token)
       retrieved.mutate("");
     }
-  }, [loginPassenger.isSuccess]);
+  }, [loginAdmin.isSuccess]);
 
   useEffect(() => {
     // Handle the success response from the useRetrieveUser hook
@@ -58,64 +61,70 @@ const PassengerLogin = () => {
     if (authResponse.isAuthenticated) {
       console.log("authentication", authResponse);
       localStorage.setItem("authData", JSON.stringify(authResponse));
-      navigate("/passenger-dashboard");
+      navigate("/admin");
     }
   }, [authResponse.isAuthenticated]);
 
-  const onSubmit = (data: PassengerLogin) => {
-    loginPassenger.mutate({
-      email: data.email,
-      password: data.password,
-    });
-  };
+  useEffect(() => {
+    if (authResponse.isAuthenticated && hasBeenAuthenticated) {
+      navigate("/admin/admin-logout");
+    }
+  }, [hasBeenAuthenticated]);
 
   return (
     <div
       className="d-flex align-items-center justify-content-center"
-      style={{ height: "100vh" }}
+      style={{ minHeight: "100vh", background: "#e1f5fe" }}
     >
-      <form onSubmit={handleSubmit(onSubmit)} style={{ width: "70vw" }}>
-        <div className="form-group mb-3">
-          {loginPassenger.error && <ErrorModal {...loginPassenger.error} />}
-          {loginPassenger.data && <ErrorModal {...loginPassenger.data} />}
-          <label className="form-lable">User Email</label>
+      <form
+        onSubmit={handleSubmit((data) => {
+          loginAdmin.mutate({
+            email: data.email,
+            password: data.password,
+          });
+        })}
+        className="p-4 bg-white rounded shadow"
+        style={{ width: "55vw", marginBottom: "9rem", background: "#e1f5fe" }}
+      >
+        <div className="mb-3">
+          {loginAdmin.error && <ErrorModal {...loginAdmin.error} />}
+          <label htmlFor="email" className="form-label">
+            User Email
+          </label>
           <input
             {...register("email")}
             type="email"
             className="form-control"
+            id="email"
             placeholder="ex@example.com"
           />
           {errors.email && (
-            <p className="text-warinig">{errors.email.message}</p>
+            <p className="text-warning">{errors.email.message}</p>
           )}
         </div>
-        <div className="form-group mb-3">
-          <label className="form-lable">Enter Your Password</label>
+        <div className="mb-3">
+          <label htmlFor="password" className="form-label">
+            Enter Your Password
+          </label>
           <input
             {...register("password")}
             type="password"
-            className="form-control mx-sm-3"
+            className="form-control"
+            id="password"
             placeholder="Password"
           />
           {errors.password && (
             <p className="text-warning">{errors.password.message}</p>
           )}
         </div>
-        <div className="d-flex justify-content-end">
-          <button
-            disabled={!isValid}
-            type="submit"
-            className="btn btn-success "
-          >
+        <div className="d-flex justify-content-end mt-4">
+          <button disabled={!isValid} type="submit" className="btn btn-success">
             Submit
           </button>
         </div>
-        <Link to={"/passenger-register"} className="nav-link">
-          Create New Account
-        </Link>
       </form>
     </div>
   );
 };
 
-export default PassengerLogin;
+export default AdminLogin;

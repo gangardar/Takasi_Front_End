@@ -1,11 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import setCSRFCookie from "../services/csrf-Token";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
-import ErrorModal from "./ErrorModal";
+import ErrorModal from "./error_handling/ErrorModal";
 import useLoginDriver from "../services/queries/useLoginDriver";
+import useRetrieveUser from "../services/queries/useRetrieveUser";
+import AuthContext from "../services/contexts/authContext";
 
 const schema = z.object({
   email: z.string().email({
@@ -13,19 +14,47 @@ const schema = z.object({
   }),
   password: z.string().min(8),
 });
-
 export type DriverLogin = z.infer<typeof schema>;
 
 const DriverLogin = () => {
-  useEffect(() => {
-    setCSRFCookie();
-  }, []);
+  const { authResponse, dispatch } = useContext(AuthContext);
   const loginDriver = useLoginDriver();
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<DriverLogin>({ resolver: zodResolver(schema) });
+
+  const retrieved = useRetrieveUser(); // Create an instance of useRetrieveUser hook
+
+  useEffect(() => {
+    // This is the correct place to handle the response from the login API
+    if (loginDriver.isSuccess) {
+      // Call the useRetrieveUser hook with an empty string (or appropriate API token)
+      retrieved.mutate("");
+    }
+  }, [loginDriver.isSuccess]);
+
+  useEffect(() => {
+    // Handle the success response from the useRetrieveUser hook
+    if (retrieved.isSuccess) {
+      const data = retrieved.data; // Access the data returned by useRetrieveUser
+      const user = data.user;
+      dispatch({
+        type: "LOGIN",
+        payload: {
+          isAuthenticated: true,
+          user: user,
+          role: user?.role,
+        },
+      });
+    }
+  }, [retrieved.isSuccess, retrieved.data]);
+
+  if (authResponse.isAuthenticated) {
+    console.log("authentication", authResponse);
+    localStorage.setItem("authData", JSON.stringify(authResponse));
+  }
 
   return (
     <div
@@ -39,7 +68,7 @@ const DriverLogin = () => {
             password: data.password,
           });
         })}
-        style={{ width: "70vw" }}
+        style={{ width: "70vw", marginBottom: "9rem" }}
       >
         <div className="form-group mb-3">
           {loginDriver.error && <ErrorModal {...loginDriver.error} />}
@@ -66,16 +95,16 @@ const DriverLogin = () => {
             <p className="text-warning">{errors.password.message}</p>
           )}
         </div>
-        <div className="d-flex justify-content-end p-5">
+        <div className="d-flex justify-content-end">
           <button
             disabled={!isValid}
             type="submit"
-            className="btn btn-success btn-lg "
+            className="btn btn-success "
           >
             Submit
           </button>
-          <Link to={"/driver-register"}>Register New Driver</Link>
         </div>
+        <Link to={"/driver-register"}>Register New Driver</Link>
       </form>
     </div>
   );

@@ -1,11 +1,18 @@
 import useDriver from "../../services/queries/useDriver";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import ErrorModal from "../error_handling/ErrorModal";
+import AuthContext from "../../services/contexts/authContext";
+import { Navigate } from "react-router-dom";
 
 const ListDriver = () => {
+  const { authResponse } = useContext(AuthContext);
+  if (!authResponse.isAuthenticated) {
+    return <Navigate to={"/admin/admin-login"} />;
+  }
   const [userId, setUserId] = useState<number>();
   const { data, error, isLoading } = useDriver();
 
-  if (error) return <p>{error.message}</p>;
+  if (error) return <ErrorModal name={error.name} message={error.message} />;
 
   if (isLoading)
     return (

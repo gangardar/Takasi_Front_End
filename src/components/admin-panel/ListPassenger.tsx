@@ -1,12 +1,14 @@
+import { useContext, useState } from "react";
 import usePassengers from "../../services/queries/usePassengers";
-import { useEffect, useState } from "react";
 import PassengerAdminModal from "../PassengerAdminModal";
-import setCSRFCookie from "../../services/csrf-Token";
+import AuthContext from "../../services/contexts/authContext";
+import { Navigate } from "react-router-dom";
 
 const ListPassenger = () => {
-  useEffect(() => {
-    setCSRFCookie();
-  }, []);
+  const { authResponse } = useContext(AuthContext);
+  if (!authResponse.isAuthenticated) {
+    return <Navigate to={"/admin/admin-login"} />;
+  }
   const [selectedPassenger, setSelectedPassenger] = useState<any>();
   const [userId, setUserId] = useState<number>();
   const { data, error, isLoading } = usePassengers();
@@ -21,10 +23,10 @@ const ListPassenger = () => {
     );
 
   return (
-    <div>
+    <div className="m-3">
       <select
         onChange={(event) => setUserId(parseInt(event.target.value))}
-        className="form-select mb-3"
+        className="form-select mb-2"
       >
         <option value="">Select Passenger</option>
         {Array.isArray(data) &&
@@ -34,7 +36,7 @@ const ListPassenger = () => {
             </option>
           ))}
       </select>
-      <table className="table">
+      <table className="table rounded 100-vh">
         <thead className="thead-dark">
           <tr>
             <th scope="col">#</th>

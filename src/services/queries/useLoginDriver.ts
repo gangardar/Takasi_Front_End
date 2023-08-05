@@ -5,11 +5,14 @@ import { DriverLogin } from "../../components/DriverLogin";
 const apiClient = new APIClient<DriverLogin>("driver/login");
 
 const useLoginDriver = () => {
-  return useMutation<DriverLogin, Error, DriverLogin>({
+  return useMutation<any, Error, DriverLogin>({
     mutationFn: (passenger: DriverLogin) => apiClient.post(passenger),
 
     onSuccess: (data, newdata) => {
-      console.log(data);
+      // Store the token in local storage
+      localStorage.setItem("apiToken", data.token);
+
+      console.log(data.token);
       console.log(newdata);
     },
     onError: (error) => {
