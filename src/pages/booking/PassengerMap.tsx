@@ -32,7 +32,7 @@ const PassengerMap = () => {
   };
 
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: "AIzaSyDj40AQyK_j5oCfvLvBJOqZtUuTlLhVCKk",
+    googleMapsApiKey: "Add your API key",
     libraries,
   });
 
